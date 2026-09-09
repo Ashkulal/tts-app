@@ -1,4 +1,8 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://tts-app-ccpr.onrender.com';
+const API_URL =
+  import.meta.env.VITE_API_URL || 'https://tts-app-ccpr.onrender.com';
+
+export { API_URL };
+
 export const api = {
   auth: {
     login: `${API_URL}/api/auth/login`,
