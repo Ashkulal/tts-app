@@ -10,7 +10,4 @@ export default defineConfig({
       '/audio': 'http://localhost:5000',
     },
   },
-  define: {
-    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || ''),
-  },
 });
