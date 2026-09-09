@@ -7,24 +7,8 @@ services:
     startCommand: npm start
     envVars:
       - key: MONGODB_URI
-        fromDatabase:
-          name: tts-db
-          property: connectionString
+        value: mongodb+srv://akashkulal866087_db_user:2oE34bd5fVErFmYM@cluster0.nm753qc.mongodb.net/tts_app
       - key: JWT_SECRET
-        generateValue: true
-      - key: OPENAI_API_KEY
-        sync: false
+        value: 9958b01c3d5c64bde5d0ce7e910341310165b1554af70dd4b999098236ededb7
       - key: NODE_ENV
         value: production
-
-  - type: web
-    name: tts-app-frontend
-    runtime: static
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-
-  - type: mongodb
-    name: tts-db
-    plan: free
-    database: tts_app

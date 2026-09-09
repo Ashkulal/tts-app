@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { api } from '../config';
 
 function Login({ onAuth }) {
   const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ function Login({ onAuth }) {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(api.auth.login, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

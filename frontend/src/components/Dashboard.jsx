@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { api } from '../config';
 
 function Dashboard({ token, user }) {
   const [stats, setStats] = useState(null);
@@ -7,10 +8,10 @@ function Dashboard({ token, user }) {
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/dashboard/stats', {
+      fetch(api.dashboard.stats, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((res) => res.json()),
-      fetch('/api/dashboard/history', {
+      fetch(api.dashboard.history, {
         headers: { Authorization: `Bearer ${token}` },
       }).then((res) => res.json()),
     ])
@@ -56,16 +57,18 @@ function Dashboard({ token, user }) {
           <p>No conversions yet. Start by converting some text!</p>
         ) : (
           history.map((item) => (
-            <div key={item.id} className="history-item">
+            <div key={item._id} className="history-item">
               <div className="info">
-                <span className="type">{item.input_type}</span>
+                <span className="type">{item.inputType}</span>
                 <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#6b7280' }}>
-                  {item.source_text?.substring(0, 100)}
-                  {item.source_text?.length > 100 ? '...' : ''}
+                  {item.sourceText?.substring(0, 100)}
+                  {item.sourceText?.length > 100 ? '...' : ''}
                 </p>
-                <small>{new Date(item.created_at).toLocaleString()}</small>
+                <small>{new Date(item.createdAt).toLocaleString()}</small>
               </div>
-              <audio controls src={item.audio_url} style={{ width: '200px' }} />
+              {item.audioUrl && (
+                <audio controls src={item.audioUrl} style={{ width: '200px' }} />
+              )}
             </div>
           ))
         )}

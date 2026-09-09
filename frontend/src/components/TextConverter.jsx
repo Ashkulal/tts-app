@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
+import { api } from '../config';
 
 function TextConverter({ token }) {
   const [inputType, setInputType] = useState('text');
   const [text, setText] = useState('');
   const [url, setUrl] = useState('');
-  const [pdfFile, setPdfFile] = useState(null);
   const [audioUrl, setAudioUrl] = useState('');
   const [charCount, setCharCount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -16,20 +16,13 @@ function TextConverter({ token }) {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-
-      if (inputType === 'text') {
-        formData.append('text', text);
-      } else if (inputType === 'url') {
-        formData.append('url', url);
-      } else if (inputType === 'pdf' && pdfFile) {
-        formData.append('pdf', pdfFile);
-      }
-
-      const res = await fetch('/api/tts/convert', {
+      const res = await fetch(api.tts.convert, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ text: inputType === 'text' ? text : undefined, url: inputType === 'url' ? url : undefined }),
       });
 
       const data = await res.json();
@@ -45,15 +38,6 @@ function TextConverter({ token }) {
       setError('Network error');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === 'application/pdf') {
-      setPdfFile(file);
-    } else {
-      setError('Please select a PDF file');
     }
   };
 
@@ -73,12 +57,6 @@ function TextConverter({ token }) {
           onClick={() => setInputType('url')}
         >
           Enter URL
-        </button>
-        <button
-          className={`tab ${inputType === 'pdf' ? 'active' : ''}`}
-          onClick={() => setInputType('pdf')}
-        >
-          Upload PDF
         </button>
       </div>
 
@@ -107,25 +85,10 @@ function TextConverter({ token }) {
         </div>
       )}
 
-      {inputType === 'pdf' && (
-        <div className="form-group">
-          <label>Upload PDF</label>
-          <div className="file-upload" onClick={() => document.getElementById('pdf-input').click()}>
-            <input
-              id="pdf-input"
-              type="file"
-              accept=".pdf"
-              onChange={handleFileChange}
-            />
-            {pdfFile ? <p>{pdfFile.name}</p> : <p>Click to select PDF file</p>}
-          </div>
-        </div>
-      )}
-
       <button
         className="btn btn-primary"
         onClick={handleConvert}
-        disabled={loading || (inputType === 'text' && !text) || (inputType === 'url' && !url) || (inputType === 'pdf' && !pdfFile)}
+        disabled={loading || (inputType === 'text' && !text) || (inputType === 'url' && !url)}
       >
         {loading ? 'Converting...' : 'Convert to Speech'}
       </button>

@@ -5,6 +5,7 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import TextConverter from './components/TextConverter';
 import Navbar from './components/Navbar';
+import { api } from './config';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -12,7 +13,7 @@ function App() {
 
   useEffect(() => {
     if (token) {
-      fetch('/api/auth/me', {
+      fetch(api.auth.me, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
