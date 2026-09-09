@@ -1,5 +1,4 @@
 backend/
-frontend/
 api/auth/
 api/tts/
 api/dashboard/
