@@ -1,3 +1,7 @@
 backend/
 frontend/
+api/auth/
+api/tts/
+api/dashboard/
+api/db.js
 node_modules/
