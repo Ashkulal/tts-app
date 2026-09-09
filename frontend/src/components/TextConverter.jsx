@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { api } from '../config';
+import { api, API_URL } from '../config';
 
 function TextConverter({ token }) {
   const [inputType, setInputType] = useState('text');
@@ -22,7 +22,10 @@ function TextConverter({ token }) {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ text: inputType === 'text' ? text : undefined, url: inputType === 'url' ? url : undefined }),
+        body: JSON.stringify({
+          text: inputType === 'text' ? text : undefined,
+          url: inputType === 'url' ? url : undefined,
+        }),
       });
 
       const data = await res.json();
@@ -32,7 +35,13 @@ function TextConverter({ token }) {
         return;
       }
 
-      setAudioUrl(data.audioUrl);
+      // Backend returns /audio/filename.mp3
+      // Convert it to the Render backend URL.
+      const fullAudioUrl = data.audioUrl.startsWith('http')
+        ? data.audioUrl
+        : `${API_URL}${data.audioUrl}`;
+
+      setAudioUrl(fullAudioUrl);
       setCharCount(data.charCount);
     } catch (err) {
       setError('Network error');
@@ -52,6 +61,7 @@ function TextConverter({ token }) {
         >
           Paste Text
         </button>
+
         <button
           className={`tab ${inputType === 'url' ? 'active' : ''}`}
           onClick={() => setInputType('url')}
@@ -65,6 +75,7 @@ function TextConverter({ token }) {
       {inputType === 'text' && (
         <div className="form-group">
           <label>Paste your text</label>
+
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -76,6 +87,7 @@ function TextConverter({ token }) {
       {inputType === 'url' && (
         <div className="form-group">
           <label>Enter URL</label>
+
           <input
             type="url"
             value={url}
@@ -88,14 +100,21 @@ function TextConverter({ token }) {
       <button
         className="btn btn-primary"
         onClick={handleConvert}
-        disabled={loading || (inputType === 'text' && !text) || (inputType === 'url' && !url)}
+        disabled={
+          loading ||
+          (inputType === 'text' && !text) ||
+          (inputType === 'url' && !url)
+        }
       >
         {loading ? 'Converting...' : 'Convert to Speech'}
       </button>
 
       {audioUrl && (
         <div className="audio-player">
-          <p>Audio ready ({charCount.toLocaleString()} characters)</p>
+          <p>
+            Audio ready ({charCount.toLocaleString()} characters)
+          </p>
+
           <audio controls src={audioUrl}>
             Your browser does not support the audio element.
           </audio>
